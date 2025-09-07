@@ -1,1 +1,302 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hamro Mini Patro</title>
+    <meta name="description" content="A free, lightweight Hamro Patro–style starter you can host on GitHub Pages." />
 
+    <!-- Tailwind via CDN for quick styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc', 400: '#818cf8',
+                500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 800: '#3730a3', 900: '#312e81'
+              }
+            },
+            fontFamily: {
+              sans: ["Inter", "system-ui", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"]
+            }
+          }
+        }
+      };
+    </script>
+
+    <!-- Nepali Date Converter (UMD) -->
+    <script src="https://cdn.jsdelivr.net/npm/nepali-date-converter/dist/nepali-date-converter.umd.js"></script>
+
+    <style>
+      /* Smooth card hover */
+      .card { transition: transform .2s ease, box-shadow .2s ease; }
+      .card:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(0,0,0,.08); }
+    </style>
+  </head>
+  <body class="bg-gray-50 text-gray-900">
+    <!-- Top Bar / Nav -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-gray-200">
+      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+        <a href="#" class="flex items-center gap-2">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-brand-600"><path d="M3 5h18M5 9h14M7 13h10M9 17h6"/></svg>
+          <span class="font-semibold text-xl">Hamro Mini Patro</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-6 text-sm">
+          <a href="#today" class="hover:text-brand-700">Today</a>
+          <a href="#convert" class="hover:text-brand-700">Date Converter</a>
+          <a href="#weather" class="hover:text-brand-700">Weather</a>
+          <a href="#news" class="hover:text-brand-700">News</a>
+          <a href="#calendar" class="hover:text-brand-700">Calendar</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="bg-gradient-to-br from-brand-50 to-white border-b border-gray-200">
+      <div class="max-w-6xl mx-auto px-4 py-10 md:py-14">
+        <h1 class="text-3xl md:text-4xl font-bold tracking-tight">Namaste! 🙏 एक सानो, निःशुल्क "Hamro Patro" शैलीको साइट</h1>
+        <p class="mt-3 text-gray-600 max-w-2xl">Fully static, no server, 100% free on GitHub Pages. Includes Nepali date, AD↔BS converter, basic weather, and a news feed.</p>
+      </div>
+    </section>
+
+    <!-- Content Grid -->
+    <main class="max-w-6xl mx-auto px-4 py-8 space-y-10">
+      <!-- Today -->
+      <section id="today" class="grid md:grid-cols-2 gap-6">
+        <div class="card bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-semibold">आजको मिति (BS)</h2>
+          <p id="today-bs" class="mt-2 text-2xl md:text-3xl font-bold text-brand-700">—</p>
+          <p id="today-bs-en" class="mt-1 text-sm text-gray-600">—</p>
+          <div class="mt-4 text-sm text-gray-600">AD (Gregorian): <span id="today-ad" class="font-medium text-gray-800">—</span></div>
+        </div>
+        <div class="card bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-semibold">Quick Notes</h2>
+          <ul class="list-disc pl-5 mt-2 text-gray-700 space-y-1 text-sm">
+            <li>Everything runs in your browser. No backend required.</li>
+            <li>You can edit this single <code>index.html</code> and push to GitHub Pages.</li>
+            <li>Swap news feeds or add more cards as you like.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Date Converter -->
+      <section id="convert" class="card bg-white rounded-2xl shadow p-6">
+        <h2 class="text-lg font-semibold">AD ↔︎ BS Date Converter</h2>
+        <div class="mt-4 grid md:grid-cols-2 gap-6">
+          <!-- AD to BS -->
+          <div class="p-4 rounded-xl border border-gray-200">
+            <h3 class="font-medium">AD → BS</h3>
+            <label class="block mt-3 text-sm">Pick AD Date</label>
+            <input id="adInput" type="date" class="mt-1 w-full rounded-lg border-gray-300 focus:border-brand-500 focus:ring-brand-500" />
+            <button id="adToBsBtn" class="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 text-white hover:bg-brand-700">Convert</button>
+            <div class="mt-3 text-sm text-gray-700">Result (BS): <span id="adToBsOut" class="font-semibold">—</span></div>
+          </div>
+          <!-- BS to AD -->
+          <div class="p-4 rounded-xl border border-gray-200">
+            <h3 class="font-medium">BS → AD</h3>
+            <div class="grid grid-cols-3 gap-3 mt-3">
+              <div>
+                <label class="block text-sm">Year (BS)</label>
+                <input id="bsYear" type="number" min="1970" max="2100" placeholder="2082" class="mt-1 w-full rounded-lg border-gray-300 focus:border-brand-500 focus:ring-brand-500" />
+              </div>
+              <div>
+                <label class="block text-sm">Month</label>
+                <select id="bsMonth" class="mt-1 w-full rounded-lg border-gray-300 focus:border-brand-500 focus:ring-brand-500">
+                  <option value="1">Baisakh</option>
+                  <option value="2">Jestha</option>
+                  <option value="3">Asar</option>
+                  <option value="4">Shrawan</option>
+                  <option value="5">Bhadra</option>
+                  <option value="6">Aswin</option>
+                  <option value="7">Kartik</option>
+                  <option value="8">Mangsir</option>
+                  <option value="9">Poush</option>
+                  <option value="10">Magh</option>
+                  <option value="11">Falgun</option>
+                  <option value="12">Chaitra</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm">Day</label>
+                <input id="bsDay" type="number" min="1" max="32" placeholder="1" class="mt-1 w-full rounded-lg border-gray-300 focus:border-brand-500 focus:ring-brand-500" />
+              </div>
+            </div>
+            <button id="bsToAdBtn" class="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 text-white hover:bg-brand-700">Convert</button>
+            <div class="mt-3 text-sm text-gray-700">Result (AD): <span id="bsToAdOut" class="font-semibold">—</span></div>
+          </div>
+        </div>
+        <p class="mt-3 text-xs text-gray-500">Tip: This converter uses the open-source <code>nepali-date-converter</code> library. For far-future dates, some month lengths may be refined as official calendars are released.</p>
+      </section>
+
+      <!-- Weather (Open-Meteo current conditions) -->
+      <section id="weather" class="card bg-white rounded-2xl shadow p-6">
+        <h2 class="text-lg font-semibold">Weather (Kathmandu)</h2>
+        <div id="weatherBox" class="mt-3 text-gray-700 text-sm">Loading current conditions…</div>
+      </section>
+
+      <!-- News (RSS via rss2json) -->
+      <section id="news" class="card bg-white rounded-2xl shadow p-6">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold">Latest News</h2>
+          <select id="newsFeed" class="rounded-md border-gray-300 text-sm">
+            <option value="https://english.onlinekhabar.com/feed">OnlineKhabar (EN)</option>
+            <option value="https://www.nepalitimes.com/feed/">Nepali Times</option>
+            <option value="https://en.setopati.com/feed">Setopati (EN)</option>
+            <option value="https://thehimalayantimes.com/feed/">The Himalayan Times</option>
+          </select>
+        </div>
+        <ul id="newsList" class="mt-4 space-y-4"></ul>
+        <p class="mt-3 text-xs text-gray-500">Uses the public <code>rss2json</code> API for demo purposes. You can replace this with your own backend later.</p>
+      </section>
+
+      <!-- Calendar embed (Google Calendar or custom) -->
+      <section id="calendar" class="card bg-white rounded-2xl shadow p-6">
+        <h2 class="text-lg font-semibold">Events & Holidays</h2>
+        <p class="text-sm text-gray-600 mt-1">Embed any public Google Calendar here (e.g., Nepal holidays) or your own calendar.</p>
+        <div class="mt-4 aspect-video w-full border rounded-xl overflow-hidden">
+          <!-- Example placeholder: replace the src with your own published Google Calendar embed URL -->
+          <iframe title="Calendar" class="w-full h-full" src="https://calendar.google.com/calendar/embed?src=en.nepalian%40gmail.com&ctz=Asia%2FKathmandu"></iframe>
+        </div>
+      </section>
+    </main>
+
+    <footer class="mt-10 border-t border-gray-200">
+      <div class="max-w-6xl mx-auto px-4 py-8 text-sm text-gray-600">
+        Built with ❤️ for the Nepali web. This starter is 100% static and free to host on GitHub Pages.
+      </div>
+    </footer>
+
+    <script>
+      // ===== Today (BS + AD) =====
+      function renderToday() {
+        try {
+          // Now in AD
+          const adNow = new Date();
+          // Convert to BS using NepaliDate (from UMD: window.NepaliDate)
+          const bsNow = NepaliDate.fromAD(adNow);
+
+          // BS in Nepali script and English
+          document.getElementById('today-bs').textContent = bsNow.format('ddd, DD MMMM YYYY', 'np');
+          document.getElementById('today-bs-en').textContent = bsNow.format('ddd, DD MMMM YYYY');
+
+          // AD in readable format
+          const adStr = adNow.toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+          document.getElementById('today-ad').textContent = adStr;
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      // ===== AD → BS =====
+      function adToBs() {
+        const val = document.getElementById('adInput').value;
+        if (!val) return;
+        const [y, m, d] = val.split('-').map(Number);
+        const jsDate = new Date(y, (m - 1), d);
+        try {
+          const bs = NepaliDate.fromAD(jsDate);
+          const out = `${bs.format('ddd, DD MMMM YYYY', 'np')} ( ${bs.format('YYYY-MM-DD')} )`;
+          document.getElementById('adToBsOut').textContent = out;
+        } catch (e) {
+          document.getElementById('adToBsOut').textContent = 'Invalid date or out of supported range.';
+        }
+      }
+
+      // ===== BS → AD =====
+      function bsToAd() {
+        const y = parseInt(document.getElementById('bsYear').value, 10);
+        const m = parseInt(document.getElementById('bsMonth').value, 10) - 1; // 0-index for NepaliDate
+        const d = parseInt(document.getElementById('bsDay').value, 10);
+        if (!y || !Number.isFinite(m) || !d) return;
+        try {
+          const bs = new NepaliDate(y, m, d);
+          const ad = bs.toJsDate();
+          const out = ad.toLocaleDateString('en-CA'); // YYYY-MM-DD in most browsers
+          document.getElementById('bsToAdOut').textContent = out;
+        } catch (e) {
+          document.getElementById('bsToAdOut').textContent = 'Invalid BS date.';
+        }
+      }
+
+      // ===== Weather (Open-Meteo current conditions) =====
+      async function loadWeather() {
+        const box = document.getElementById('weatherBox');
+        try {
+          const lat = 27.717; // Kathmandu approx
+          const lon = 85.324;
+          const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=Asia%2FKathmandu`;
+          const res = await fetch(url);
+          const data = await res.json();
+          const c = data.current;
+          const wmoText = (code => {
+            const map = {
+              0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
+              45: 'Fog', 48: 'Depositing rime fog',
+              51: 'Light drizzle', 53: 'Moderate drizzle', 55: 'Dense drizzle',
+              56: 'Freezing drizzle (light)', 57: 'Freezing drizzle (dense)',
+              61: 'Slight rain', 63: 'Moderate rain', 65: 'Heavy rain',
+              66: 'Freezing rain (light)', 67: 'Freezing rain (heavy)',
+              71: 'Slight snow fall', 73: 'Moderate snow fall', 75: 'Heavy snow fall',
+              77: 'Snow grains', 80: 'Slight rain showers', 81: 'Moderate rain showers', 82: 'Violent rain showers',
+              85: 'Slight snow showers', 86: 'Heavy snow showers', 95: 'Thunderstorm', 96: 'Thunderstorm with slight hail', 99: 'Thunderstorm with heavy hail'
+            };
+            return map[code] || `Code ${code}`;
+          })(c.weather_code);
+
+          box.innerHTML = `
+            <div class="flex flex-wrap items-center gap-6">
+              <div>
+                <div class="text-4xl font-bold">${Math.round(c.temperature_2m)}°C</div>
+                <div class="text-xs text-gray-500">Feels like ${Math.round(c.apparent_temperature)}°C • ${wmoText}</div>
+              </div>
+              <div class="text-sm text-gray-600">Humidity: ${c.relative_humidity_2m}% · Wind: ${Math.round(c.wind_speed_10m)} km/h</div>
+            </div>`;
+        } catch (err) {
+          box.textContent = 'Weather unavailable right now.';
+          console.error(err);
+        }
+      }
+
+      // ===== News (rss2json) =====
+      async function loadNews(feedUrl) {
+        const list = document.getElementById('newsList');
+        list.innerHTML = '<li class="text-sm text-gray-500">Loading…</li>';
+        try {
+          const api = 'https://api.rss2json.com/v1/api.json?count=8&rss_url=' + encodeURIComponent(feedUrl);
+          const res = await fetch(api);
+          const data = await res.json();
+          if (data.status !== 'ok') throw new Error(data.message || 'Feed error');
+          list.innerHTML = '';
+          data.items.slice(0,8).forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'p-4 rounded-lg border border-gray-200 hover:border-brand-300';
+            li.innerHTML = `
+              <a href="${item.link}" target="_blank" rel="noopener" class="block">
+                <div class="text-sm text-gray-500">${new Date(item.pubDate).toLocaleString()}</div>
+                <div class="font-medium mt-1">${item.title}</div>
+                <div class="text-sm text-gray-600 line-clamp-2">${(item.description || '').replace(/<[^>]+>/g,'').slice(0,160)}…</div>
+              </a>`;
+            list.appendChild(li);
+          });
+        } catch (e) {
+          list.innerHTML = '<li class="text-sm text-red-600">Failed to load feed. Try switching the source.</li>';
+          console.error(e);
+        }
+      }
+
+      // ===== Boot =====
+      document.addEventListener('DOMContentLoaded', () => {
+        renderToday();
+        loadWeather();
+        loadNews(document.getElementById('newsFeed').value);
+
+        document.getElementById('adToBsBtn').addEventListener('click', adToBs);
+        document.getElementById('bsToAdBtn').addEventListener('click', bsToAd);
+        document.getElementById('newsFeed').addEventListener('change', e => loadNews(e.target.value));
+      });
+    </script>
+  </body>
+            </html>
+        
